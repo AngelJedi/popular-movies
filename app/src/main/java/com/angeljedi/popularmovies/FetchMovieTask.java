@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.ListView;
+import android.widget.GridView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -111,7 +111,7 @@ public class FetchMovieTask extends AsyncTask<Void, Void, List<Movie>> {
             JSONObject object = array.getJSONObject(i);
             Movie movie = new Movie();
             movie.setTitle(object.getString("original_title"));
-            movie.setThumbnailPath(object.getString("backdrop_path"));
+            movie.setThumbnailPath(object.getString("poster_path"));
             movie.setSynopsis(object.getString("overview"));
             movie.setUserRating(object.getString("vote_average"));
             movie.setReleastDate(object.getString("release_date"));
@@ -123,7 +123,7 @@ public class FetchMovieTask extends AsyncTask<Void, Void, List<Movie>> {
     protected void onPostExecute(List<Movie> movieList) {
         MovieAdapter adapter = new MovieAdapter(mActivity, android.R.layout.simple_list_item_1, mMovieList);
         adapter.notifyDataSetChanged();
-        ListView list = (ListView)mActivity.findViewById(R.id.list_movies);
-        list.setAdapter(adapter);
+        GridView grid = (GridView)mActivity.findViewById(R.id.grid_movies);
+        grid.setAdapter(adapter);
     }
 }
