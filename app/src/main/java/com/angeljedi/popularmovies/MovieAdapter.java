@@ -14,11 +14,8 @@ import java.util.List;
 public class MovieAdapter extends ArrayAdapter<Movie> {
     private static final String THUMBNAIL_URL = "http://image.tmdb.org/t/p/w500/";
 
-    private Context mContext;
-
     public MovieAdapter(Context context, int resourceId, List<Movie> movieList) {
         super(context, resourceId, movieList);
-        mContext = context;
     }
 
     @Override
