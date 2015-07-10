@@ -3,18 +3,22 @@ package com.angeljedi.popularmovies;
 import java.io.Serializable;
 
 public class Movie implements Serializable {
+    public static final String THUMBNAIL_URL = "http://image.tmdb.org/t/p/";
+    public static final String THUMBNAIL_SMALL = THUMBNAIL_URL + "w185/";
+    public static final String THUMBNAIL_LARGE = THUMBNAIL_URL + "w500/";
+
     private String title;
     private String thumbnailPath;
     private String synopsis;
     private String userRating;
-    private String releastDate;
+    private String releaseDate;
 
-    public String getReleastDate() {
-        return releastDate;
+    public String getReleaseDate() {
+        return releaseDate;
     }
 
-    public void setReleastDate(String releastDate) {
-        this.releastDate = releastDate;
+    public void setReleaseDate(String releaseDate) {
+        this.releaseDate = releaseDate;
     }
 
     public String getSynopsis() {

@@ -12,7 +12,6 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 public class MovieAdapter extends ArrayAdapter<Movie> {
-    private static final String THUMBNAIL_URL = "http://image.tmdb.org/t/p/w500/";
 
     public MovieAdapter(Context context, int resourceId, List<Movie> movieList) {
         super(context, resourceId, movieList);
@@ -26,7 +25,7 @@ public class MovieAdapter extends ArrayAdapter<Movie> {
         }
 
         ImageView imageView = (ImageView) convertView.findViewById(R.id.movie_thumbnail);
-        Picasso.with(getContext()).load(THUMBNAIL_URL + movie.getThumbnailPath()).into(imageView);
+        Picasso.with(getContext()).load(Movie.THUMBNAIL_LARGE + movie.getThumbnailPath()).into(imageView);
         return convertView;
     }
 

@@ -114,7 +114,7 @@ public class FetchMovieTask extends AsyncTask<Void, Void, List<Movie>> {
             movie.setThumbnailPath(object.getString("poster_path"));
             movie.setSynopsis(object.getString("overview"));
             movie.setUserRating(object.getString("vote_average"));
-            movie.setReleastDate(object.getString("release_date"));
+            movie.setReleaseDate(object.getString("release_date"));
             mMovieList.add(movie);
         }
     }
