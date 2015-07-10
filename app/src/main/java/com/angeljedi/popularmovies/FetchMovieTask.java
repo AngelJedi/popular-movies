@@ -27,10 +27,12 @@ public class FetchMovieTask extends AsyncTask<Void, Void, List<Movie>> {
 
     private Activity mActivity;
     private List<Movie> mMovieList;
+    private String mSortOrder;
 
     public FetchMovieTask(Activity activity) {
         mActivity = activity;
         mMovieList = new ArrayList<>();
+        mSortOrder = Utility.getPreferredSort(mActivity);
     }
 
     @Override
@@ -41,8 +43,6 @@ public class FetchMovieTask extends AsyncTask<Void, Void, List<Movie>> {
 
         String movieJsonStr = null;
 
-        String sortBy = "popularity.desc";
-
         try {
             final String MOVIE_BASE_URL =
                     "http://api.themoviedb.org/3/discover/movie";
@@ -50,7 +50,7 @@ public class FetchMovieTask extends AsyncTask<Void, Void, List<Movie>> {
             final String API_KEY_PARAM = "api_key";
 
             Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
-                    .appendQueryParameter(SORT_PARAM, sortBy)
+                    .appendQueryParameter(SORT_PARAM, mSortOrder)
                     .appendQueryParameter(API_KEY_PARAM, API_KEY)
                     .build();
 

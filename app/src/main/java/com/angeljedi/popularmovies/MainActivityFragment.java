@@ -45,6 +45,14 @@ public class MainActivityFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        loadMovies();
+    }
+
+    public void onSortChanged() {
+        loadMovies();
+    }
+
+    private void loadMovies() {
         new FetchMovieTask(getActivity()).execute();
     }
 }

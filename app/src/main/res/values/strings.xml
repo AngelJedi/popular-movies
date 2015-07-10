@@ -1,6 +1,18 @@
 <resources>
     <string name="app_name">Popular Movies</string>
-    <string name="hello_world">Hello world!</string>
+
+    <!--Action Strings-->
     <string name="action_settings">Settings</string>
+
+    <!--Title Strings-->
     <string name="title_activity_details">Movie Details</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Preference strings -->
+    <string name="pref_sort_label">Sort Order</string>
+    <string name="pref_sort_key" translatable="false">sort</string>
+    <string name="pref_sort_popular_label" translatable="false">Most Popular</string>
+    <string name="pref_sort_rating_label" translatable="false">Highest Rated</string>
+    <string name="pref_sort_popular_value" translatable="false">popularity.desc</string>
+    <string name="pref_sort_rating_value" translatable="false">vote_average.desc</string>
 </resources>

@@ -1,14 +1,18 @@
 package com.angeljedi.popularmovies;
 
-import android.support.v7.app.AppCompatActivity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity {
 
+    private String mSortOrder;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        mSortOrder = Utility.getPreferredSort(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
     }
@@ -30,9 +34,24 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        String savedSortOrder = Utility.getPreferredSort(this);
+        if (savedSortOrder != null && !savedSortOrder.equals(mSortOrder)) {
+            MainActivityFragment fragment = (MainActivityFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_main);
+            if (fragment != null) {
+                fragment.onSortChanged();
+            }
+        }
+        mSortOrder = savedSortOrder;
     }
 }
