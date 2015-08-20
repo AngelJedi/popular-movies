@@ -1,8 +1,10 @@
-package com.angeljedi.popularmovies;
+package com.angeljedi.popularmovies.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+
+import com.angeljedi.popularmovies.R;
 
 public class Utility {
 

@@ -1,4 +1,4 @@
-package com.angeljedi.popularmovies;
+package com.angeljedi.popularmovies.domain;
 
 import java.io.Serializable;
 

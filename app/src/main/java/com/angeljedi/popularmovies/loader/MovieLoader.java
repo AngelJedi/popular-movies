@@ -1,10 +1,13 @@
-package com.angeljedi.popularmovies;
+package com.angeljedi.popularmovies.loader;
 
-import android.app.Activity;
+import android.annotation.TargetApi;
+import android.content.Context;
 import android.net.Uri;
-import android.os.AsyncTask;
+import android.os.Build;
 import android.util.Log;
-import android.widget.GridView;
+
+import com.angeljedi.popularmovies.domain.Movie;
+import com.angeljedi.popularmovies.util.Utility;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,25 +22,25 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FetchMovieTask extends AsyncTask<Void, Void, List<Movie>> {
+@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+public class MovieLoader extends AsyncLoader<List<Movie>> {
 
     private static final String API_KEY = "16bf8a35a93817bb80ca46d39c0ed624";
 
-    private final String LOG_TAG = FetchMovieTask.class.getSimpleName();
+    private final String LOG_TAG = MovieLoader.class.getSimpleName();
 
-    private Activity mActivity;
     private List<Movie> mMovieList;
     private String mSortOrder;
 
-    public FetchMovieTask(Activity activity) {
-        mActivity = activity;
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    public MovieLoader(Context context) {
+        super(context);
         mMovieList = new ArrayList<>();
-        mSortOrder = Utility.getPreferredSort(mActivity);
+        mSortOrder = Utility.getPreferredSort(context);
     }
 
     @Override
-    protected List<Movie> doInBackground(Void... params) {
-
+    public List<Movie> loadInBackground() {
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
 
@@ -64,7 +67,7 @@ public class FetchMovieTask extends AsyncTask<Void, Void, List<Movie>> {
             InputStream inputStream = urlConnection.getInputStream();
             StringBuffer buffer = new StringBuffer();
             if (inputStream == null) {
-                return null;
+                return mMovieList;
             }
             reader = new BufferedReader(new InputStreamReader(inputStream));
 
@@ -74,7 +77,7 @@ public class FetchMovieTask extends AsyncTask<Void, Void, List<Movie>> {
             }
 
             if (buffer.length() == 0) {
-                return null;
+                return mMovieList;
             }
             movieJsonStr = buffer.toString();
 
@@ -98,7 +101,7 @@ public class FetchMovieTask extends AsyncTask<Void, Void, List<Movie>> {
                 }
             }
         }
-        return null;
+        return mMovieList;
     }
 
     private void getMoviesFromJson(JSONObject jsonObject) throws JSONException {
@@ -117,13 +120,5 @@ public class FetchMovieTask extends AsyncTask<Void, Void, List<Movie>> {
             movie.setReleaseDate(object.getString("release_date"));
             mMovieList.add(movie);
         }
-    }
-
-    @Override
-    protected void onPostExecute(List<Movie> movieList) {
-        MovieAdapter adapter = new MovieAdapter(mActivity, android.R.layout.simple_list_item_1, mMovieList);
-        adapter.notifyDataSetChanged();
-        GridView grid = (GridView)mActivity.findViewById(R.id.grid_movies);
-        grid.setAdapter(adapter);
     }
 }

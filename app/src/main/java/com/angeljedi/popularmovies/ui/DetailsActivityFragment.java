@@ -1,4 +1,4 @@
-package com.angeljedi.popularmovies;
+package com.angeljedi.popularmovies.ui;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.angeljedi.popularmovies.R;
+import com.angeljedi.popularmovies.domain.Movie;
 import com.squareup.picasso.Picasso;
 
 /**

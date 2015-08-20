@@ -1,10 +1,12 @@
-package com.angeljedi.popularmovies;
+package com.angeljedi.popularmovies.ui;
 
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
+
+import com.angeljedi.popularmovies.R;
 
 public class SettingsActivity extends PreferenceActivity implements Preference.OnPreferenceChangeListener {
 

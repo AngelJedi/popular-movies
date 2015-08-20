@@ -3,18 +3,25 @@
     android:layout_height="wrap_content"
     tools:context=".MainActivityFragment">
 
-    <GridView
+    <android.support.v7.widget.RecyclerView
         android:id="@+id/grid_movies"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:numColumns="auto_fit"
-        android:columnWidth="@dimen/poster_size"
-        android:verticalSpacing="@dimen/poster_spacing"
-        android:horizontalSpacing="@dimen/poster_spacing"
-        android:stretchMode="columnWidth"
-        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:background="@color/black"
         />
+
+    <!--<RecView-->
+        <!--android:id="@+id/grid_movies"-->
+        <!--android:layout_width="fill_parent"-->
+        <!--android:layout_height="fill_parent"-->
+        <!--android:numColumns="auto_fit"-->
+        <!--android:columnWidth="@dimen/poster_size"-->
+        <!--android:verticalSpacing="@dimen/poster_spacing"-->
+        <!--android:horizontalSpacing="@dimen/poster_spacing"-->
+        <!--android:stretchMode="columnWidth"-->
+        <!--android:gravity="center"-->
+        <!--android:background="@color/black"-->
+        <!--/>-->
 
 
 </LinearLayout>
