@@ -15,11 +15,13 @@ import com.squareup.picasso.Picasso;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class DetailsActivityFragment extends Fragment {
+public class DetailsFragment extends Fragment {
 
     public static final String EXTRA_MOVIE = "movie";
 
-    public DetailsActivityFragment() {
+    private Movie movie;
+
+    public DetailsFragment() {
     }
 
     @Override
@@ -27,8 +29,11 @@ public class DetailsActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_details, container, false);
 
-        Bundle bundle = getActivity().getIntent().getExtras();
-        Movie movie = (Movie) bundle.getSerializable(EXTRA_MOVIE);
+
+        Bundle args = getArguments();
+        if (args != null) {
+            movie = args.getParcelable(EXTRA_MOVIE);
+        }
 
         if (movie != null) {
             TextView tvTitle = (TextView) view.findViewById(R.id.details_title);

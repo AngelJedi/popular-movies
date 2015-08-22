@@ -1,6 +1,5 @@
 package com.angeljedi.popularmovies.ui;
 
-import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -23,11 +22,11 @@ import java.util.List;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MainActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<Movie>>, MovieViewHolder.ClickListener {
+public class MainFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<Movie>>, MovieViewHolder.ClickListener {
 
     private static final int LOADER_ID = 0;
 
-    public MainActivityFragment() {
+    public MainFragment() {
     }
 
     private RecyclerView recyclerView;
@@ -44,9 +43,9 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         int spanCount = 2;
         space = getResources().getDimensionPixelSize(R.dimen.poster_spacing);
 
-        GridLayoutManager featuredCategoryLayoutManager = new GridLayoutManager(getActivity(), spanCount);
-        featuredCategoryLayoutManager.setSpanSizeLookup(new MovieSpanSizeLookup());
-        recyclerView.setLayoutManager(featuredCategoryLayoutManager);
+        GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), spanCount);
+        layoutManager.setSpanSizeLookup(new MovieSpanSizeLookup());
+        recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
             @Override
             public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
@@ -93,12 +92,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     public void onMovieClicked(int position) {
         Movie movie = movieAdapter.getItemAtPosition(position);
 
-        Bundle bundle = new Bundle();
-        bundle.putSerializable(DetailsActivityFragment.EXTRA_MOVIE, movie);
-
-        Intent intent = new Intent(getActivity(), DetailsActivity.class);
-        intent.putExtras(bundle);
-        startActivity(intent);
+        ((Callback) getActivity()).onItemSelected(movie);
     }
 
     private static class MovieSpanSizeLookup extends GridLayoutManager.SpanSizeLookup {
@@ -112,5 +106,17 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         public int getSpanIndex(int position, int spanCount) {
             return position % spanCount;
         }
+    }
+
+    /**
+     * A callback interface that all activities containing this fragment must
+     * implement. This mechanism allows activities to be notified of item
+     * selections.
+     */
+    public interface Callback {
+        /**
+         * Callback for when an item has been selected.
+         */
+        public void onItemSelected(Movie movie);
     }
 }

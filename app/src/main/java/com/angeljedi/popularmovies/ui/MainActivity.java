@@ -7,10 +7,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.angeljedi.popularmovies.R;
+import com.angeljedi.popularmovies.domain.Movie;
 import com.angeljedi.popularmovies.util.Utility;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MainFragment.Callback{
 
+    private static final String DETAILSFRAGMENT_TAG = "DFTAG";
+
+    private boolean mTwoPaneLayout;
     private String mSortOrder;
 
     @Override
@@ -18,6 +22,19 @@ public class MainActivity extends AppCompatActivity {
         mSortOrder = Utility.getPreferredSort(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        if (findViewById(R.id.detail_container) != null) {
+            // two pane layout is present only in large-screen layouts and possibly landscape (layout/sw-600dp, layout/landscape)
+            mTwoPaneLayout = true;
+            // add the detail view to the activity when it is a two pane layout.
+            if (savedInstanceState == null) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.detail_container, new DetailsFragment(), DETAILSFRAGMENT_TAG)
+                        .commit();
+            }
+        } else {
+            mTwoPaneLayout = false;
+        }
     }
 
 
@@ -50,11 +67,29 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         String savedSortOrder = Utility.getPreferredSort(this);
         if (savedSortOrder != null && !savedSortOrder.equals(mSortOrder)) {
-            MainActivityFragment fragment = (MainActivityFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_main);
+            MainFragment fragment = (MainFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_main);
             if (fragment != null) {
                 fragment.onSortChanged();
             }
         }
         mSortOrder = savedSortOrder;
+    }
+
+    @Override
+    public void onItemSelected(Movie movie) {
+        if (mTwoPaneLayout) {
+            Bundle args = new Bundle();
+            args.putParcelable(DetailsFragment.EXTRA_MOVIE, movie);
+            DetailsFragment fragment = new DetailsFragment();
+            fragment.setArguments(args);
+
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.detail_container, fragment, DETAILSFRAGMENT_TAG)
+                    .commit();
+        } else {
+            Intent intent = new Intent(this, DetailsActivity.class);
+            intent.putExtra(DetailsFragment.EXTRA_MOVIE, movie);
+            startActivity(intent);
+        }
     }
 }
