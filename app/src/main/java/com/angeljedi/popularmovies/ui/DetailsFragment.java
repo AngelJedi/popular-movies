@@ -95,7 +95,11 @@ public class DetailsFragment extends Fragment implements LoaderManager.LoaderCal
 
     @Override
     public Loader<List<Trailer>> onCreateLoader(int i, Bundle bundle) {
-        return new TrailerLoader(getActivity(), movie.getId());
+        String movieId = "";
+        if (movie != null) {
+            movieId = movie.getId();
+        }
+        return new TrailerLoader(getActivity(), movieId);
     }
 
     @Override

@@ -40,6 +40,10 @@ public class TrailerLoader extends AsyncLoader<List<Trailer>> {
 
     @Override
     public List<Trailer> loadInBackground() {
+        if (movieId == null || movieId.equals("")) {
+            return trailerList;
+        }
+
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
 
