@@ -12,7 +12,8 @@
         android:orientation="horizontal"
         >
 
-        <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
+        <ImageView
+            android:id="@+id/play"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:adjustViewBounds="true"

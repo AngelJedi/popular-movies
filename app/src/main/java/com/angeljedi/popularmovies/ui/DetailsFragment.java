@@ -1,5 +1,7 @@
 package com.angeljedi.popularmovies.ui;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -109,7 +111,9 @@ public class DetailsFragment extends Fragment implements LoaderManager.LoaderCal
     }
 
     @Override
-    public void onTrailerClicked(int position) {
-
+    public void onPlayClicked(String trailerKey) {
+        Uri uri = Uri.parse("http://www.youtube.com/watch?v=" + trailerKey);
+        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        startActivity(intent);
     }
 }

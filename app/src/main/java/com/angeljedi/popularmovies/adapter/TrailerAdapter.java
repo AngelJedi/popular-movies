@@ -34,6 +34,7 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerViewHolder> {
     @Override
     public void onBindViewHolder(TrailerViewHolder holder, int position) {
         Trailer trailer = trailerList.get(position);
+        holder.setTrailer(trailer);
         holder.getNameTextView().setText(trailer.getName());
     }
 
