@@ -6,8 +6,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
 
-import com.angeljedi.popularmovies.domain.Movie;
-import com.angeljedi.popularmovies.util.Utility;
+import com.angeljedi.popularmovies.domain.Trailer;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -23,24 +22,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-public class MovieLoader extends AsyncLoader<List<Movie>> {
+public class TrailerLoader extends AsyncLoader<List<Trailer>> {
 
     private static final String API_KEY = "16bf8a35a93817bb80ca46d39c0ed624";
 
-    private final String LOG_TAG = MovieLoader.class.getSimpleName();
+    private final String LOG_TAG = TrailerLoader.class.getSimpleName();
 
-    private List<Movie> mMovieList;
-    private String mSortOrder;
+    private List<Trailer> trailerList;
+    private String movieId;
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public MovieLoader(Context context) {
+    public TrailerLoader(Context context, String movieId) {
         super(context);
-        mMovieList = new ArrayList<>();
-        mSortOrder = Utility.getPreferredSort(context);
+        trailerList = new ArrayList<>();
+        this.movieId = movieId;
     }
 
     @Override
-    public List<Movie> loadInBackground() {
+    public List<Trailer> loadInBackground() {
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
 
@@ -48,12 +47,13 @@ public class MovieLoader extends AsyncLoader<List<Movie>> {
 
         try {
             final String MOVIE_BASE_URL =
-                    "http://api.themoviedb.org/3/discover/movie";
-            final String SORT_PARAM = "sort_by";
+                    "http://api.themoviedb.org/3/movie";
             final String API_KEY_PARAM = "api_key";
+            final String TRAILER_PATH = "videos";
 
             Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
-                    .appendQueryParameter(SORT_PARAM, mSortOrder)
+                    .appendPath(movieId)
+                    .appendPath(TRAILER_PATH)
                     .appendQueryParameter(API_KEY_PARAM, API_KEY)
                     .build();
 
@@ -67,7 +67,7 @@ public class MovieLoader extends AsyncLoader<List<Movie>> {
             InputStream inputStream = urlConnection.getInputStream();
             StringBuffer buffer = new StringBuffer();
             if (inputStream == null) {
-                return mMovieList;
+                return trailerList;
             }
             reader = new BufferedReader(new InputStreamReader(inputStream));
 
@@ -77,15 +77,15 @@ public class MovieLoader extends AsyncLoader<List<Movie>> {
             }
 
             if (buffer.length() == 0) {
-                return mMovieList;
+                return trailerList;
             }
             movieJsonStr = buffer.toString();
 
             JSONObject jsonObject = new JSONObject(movieJsonStr);
-            getMoviesFromJson(jsonObject);
+            getTrailersFromJson(jsonObject);
 
         } catch (IOException e) {
-            Log.e(LOG_TAG, "Error retrieving movie list", e);
+            Log.e(LOG_TAG, "Error retrieving trailer list", e);
         } catch (JSONException e ) {
             Log.e(LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
@@ -101,10 +101,10 @@ public class MovieLoader extends AsyncLoader<List<Movie>> {
                 }
             }
         }
-        return mMovieList;
+        return trailerList;
     }
 
-    private void getMoviesFromJson(JSONObject jsonObject) throws JSONException {
+    private void getTrailersFromJson(JSONObject jsonObject) throws JSONException {
         JSONArray array = jsonObject.getJSONArray("results");
         if (array == null) {
             return;
@@ -112,14 +112,11 @@ public class MovieLoader extends AsyncLoader<List<Movie>> {
 
         for (int i = 0, size = array.length(); i < size; i++) {
             JSONObject object = array.getJSONObject(i);
-            Movie movie = new Movie();
-            movie.setId(object.getString("id"));
-            movie.setTitle(object.getString("original_title"));
-            movie.setThumbnailPath(object.getString("poster_path"));
-            movie.setSynopsis(object.getString("overview"));
-            movie.setUserRating(object.getString("vote_average"));
-            movie.setReleaseDate(object.getString("release_date"));
-            mMovieList.add(movie);
+            Trailer trailer = new Trailer();
+            trailer.setName(object.getString("name"));
+            trailer.setKey(object.getString("key"));
+            trailer.setType(object.getString("type"));
+            trailerList.add(trailer);
         }
     }
 }

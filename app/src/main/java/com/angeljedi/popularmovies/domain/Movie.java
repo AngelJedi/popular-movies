@@ -8,6 +8,7 @@ public class Movie implements Parcelable {
     public static final String THUMBNAIL_SMALL = THUMBNAIL_URL + "w185/";
     public static final String THUMBNAIL_LARGE = THUMBNAIL_URL + "w500/";
 
+    private String id;
     private String title;
     private String thumbnailPath;
     private String synopsis;
@@ -15,6 +16,14 @@ public class Movie implements Parcelable {
     private String releaseDate;
 
     public Movie() {
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getReleaseDate() {
@@ -58,6 +67,7 @@ public class Movie implements Parcelable {
     }
 
     protected Movie(Parcel in) {
+        id = in.readString();
         title = in.readString();
         thumbnailPath = in.readString();
         synopsis = in.readString();
@@ -72,6 +82,7 @@ public class Movie implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
         dest.writeString(title);
         dest.writeString(thumbnailPath);
         dest.writeString(synopsis);
