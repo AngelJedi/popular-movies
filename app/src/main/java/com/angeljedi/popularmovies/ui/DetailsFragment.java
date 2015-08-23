@@ -38,6 +38,8 @@ public class DetailsFragment extends Fragment implements TrailerViewHolder.Click
 
     public static final String EXTRA_MOVIE = "movie";
 
+    private static final String STATE_MOVIE = "MOVIE";
+
     private static final int TRAILER_LOADER_ID = 0;
     private static final int REVIEW_LOADER_ID = 1;
 
@@ -127,6 +129,20 @@ public class DetailsFragment extends Fragment implements TrailerViewHolder.Click
         reviewRecyclerView.setAdapter(reviewAdapter);
 
         return view;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (savedInstanceState != null && savedInstanceState.containsKey(STATE_MOVIE)) {
+            movie = savedInstanceState.getParcelable(STATE_MOVIE);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelable(STATE_MOVIE, movie);
+        super.onSaveInstanceState(outState);
     }
 
     private void onFavoriteButtonClicked() {

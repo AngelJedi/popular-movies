@@ -2,6 +2,7 @@ package com.angeljedi.popularmovies.ui;
 
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -17,12 +18,15 @@ import com.angeljedi.popularmovies.domain.Movie;
 import com.angeljedi.popularmovies.loader.MovieLoader;
 import com.angeljedi.popularmovies.ui.widgets.MovieViewHolder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * A placeholder fragment containing a simple view.
  */
 public class MainFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<Movie>>, MovieViewHolder.ClickListener {
+
+    private static final String STATE_MOVIE_LIST = "MOVIE_LIST";
 
     private static final int LOADER_ID = 0;
 
@@ -66,7 +70,27 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        if (savedInstanceState != null && savedInstanceState.containsKey(STATE_MOVIE_LIST)) {
+            Parcelable[] movieArray = savedInstanceState.getParcelableArray(STATE_MOVIE_LIST);
+            List<Movie> movieList = new ArrayList<>();
+            for (Parcelable movie : movieArray) {
+                movieList.add((Movie) movie);
+            }
+            movieAdapter.changeMovieList(movieList);
+        }
+
         getLoaderManager().initLoader(LOADER_ID, null, this);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        List<Movie> movieList = movieAdapter.getMovieList();
+        Parcelable[] movieArray = new Parcelable[movieList.size()];
+        for (int i=0; i<movieList.size(); i++) {
+            movieArray[i] = movieList.get(i);
+        }
+        outState.putParcelableArray(STATE_MOVIE_LIST, movieArray);
+        super.onSaveInstanceState(outState);
     }
 
     public void onSortChanged() {
