@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,66 +30,60 @@ public class MovieLoader extends AsyncLoader<List<Movie>> {
 
     private final String LOG_TAG = MovieLoader.class.getSimpleName();
 
-    private List<Movie> mMovieList;
-    private String mSortOrder;
+    private List<Movie> movieList;
+    private String sortOrder;
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public MovieLoader(Context context) {
         super(context);
-        mMovieList = new ArrayList<>();
-        mSortOrder = Utility.getPreferredSort(context);
+        movieList = new ArrayList<>();
+        sortOrder = Utility.getPreferredSort(context);
     }
 
     @Override
     public List<Movie> loadInBackground() {
+        URL url = buildUrl();
+        if (url == null) {
+            return movieList;
+        }
+        String movieJsonStr = makeApiCall(url);
+        if (movieJsonStr.equals("")) {
+            return movieList;
+        }
+
+        getMovieListFromJsonArray(movieJsonStr);
+        return movieList;
+    }
+
+    private String makeApiCall(URL url) {
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
-
-        String movieJsonStr = null;
+        StringBuilder builder;
 
         try {
-            final String MOVIE_BASE_URL =
-                    "http://api.themoviedb.org/3/discover/movie";
-            final String SORT_PARAM = "sort_by";
-            final String API_KEY_PARAM = "api_key";
-
-            Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
-                    .appendQueryParameter(SORT_PARAM, mSortOrder)
-                    .appendQueryParameter(API_KEY_PARAM, API_KEY)
-                    .build();
-
-            URL url = new URL(builtUri.toString());
-
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("GET");
             urlConnection.connect();
 
             // Read the input stream into a String
             InputStream inputStream = urlConnection.getInputStream();
-            StringBuffer buffer = new StringBuffer();
+            builder = new StringBuilder();
             if (inputStream == null) {
-                return mMovieList;
+                return "";
             }
             reader = new BufferedReader(new InputStreamReader(inputStream));
 
             String line;
             while ((line = reader.readLine()) != null) {
-                buffer.append(line + "\n");
+                builder.append(line + "\n");
             }
 
-            if (buffer.length() == 0) {
-                return mMovieList;
+            if (builder.length() == 0) {
+                return "";
             }
-            movieJsonStr = buffer.toString();
-
-            JSONObject jsonObject = new JSONObject(movieJsonStr);
-            getMoviesFromJson(jsonObject);
-
         } catch (IOException e) {
             Log.e(LOG_TAG, "Error retrieving movie list", e);
-        } catch (JSONException e ) {
-            Log.e(LOG_TAG, e.getMessage(), e);
-            e.printStackTrace();
+            return "";
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
@@ -101,25 +96,53 @@ public class MovieLoader extends AsyncLoader<List<Movie>> {
                 }
             }
         }
-        return mMovieList;
+
+        return builder.toString();
     }
 
-    private void getMoviesFromJson(JSONObject jsonObject) throws JSONException {
-        JSONArray array = jsonObject.getJSONArray("results");
-        if (array == null) {
-            return;
-        }
+    private URL buildUrl() {
+        final String MOVIE_BASE_URL =
+                "http://api.themoviedb.org/3/discover/movie";
+        final String SORT_PARAM = "sort_by";
+        final String API_KEY_PARAM = "api_key";
 
-        for (int i = 0, size = array.length(); i < size; i++) {
-            JSONObject object = array.getJSONObject(i);
-            Movie movie = new Movie();
-            movie.setId(object.getString("id"));
-            movie.setTitle(object.getString("original_title"));
-            movie.setThumbnailPath(object.getString("poster_path"));
-            movie.setSynopsis(object.getString("overview"));
-            movie.setUserRating(object.getString("vote_average"));
-            movie.setReleaseDate(object.getString("release_date"));
-            mMovieList.add(movie);
+        try {
+            Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
+                    .appendQueryParameter(SORT_PARAM, sortOrder)
+                    .appendQueryParameter(API_KEY_PARAM, API_KEY)
+                    .build();
+
+            return new URL(builtUri.toString());
+        } catch (MalformedURLException e) {
+            return null;
         }
+    }
+
+    private void getMovieListFromJsonArray(String movieJsonStr) {
+        try {
+            JSONObject jsonObject = new JSONObject(movieJsonStr);
+            JSONArray array = jsonObject.getJSONArray("results");
+            if (array == null) {
+                return;
+            }
+
+            for (int i = 0, size = array.length(); i < size; i++) {
+                JSONObject object = array.getJSONObject(i);
+                getMovieFromJsonObject(object);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void getMovieFromJsonObject(JSONObject object) throws JSONException {
+        Movie movie = new Movie();
+        movie.setId(object.getString("id"));
+        movie.setTitle(object.getString("original_title"));
+        movie.setThumbnailPath(object.getString("poster_path"));
+        movie.setSynopsis(object.getString("overview"));
+        movie.setUserRating(object.getString("vote_average"));
+        movie.setReleaseDate(object.getString("release_date"));
+        movieList.add(movie);
     }
 }
