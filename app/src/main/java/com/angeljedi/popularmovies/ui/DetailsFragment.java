@@ -11,8 +11,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.angeljedi.popularmovies.R;
 import com.angeljedi.popularmovies.adapter.TrailerAdapter;
@@ -20,6 +22,7 @@ import com.angeljedi.popularmovies.domain.Movie;
 import com.angeljedi.popularmovies.domain.Trailer;
 import com.angeljedi.popularmovies.loader.TrailerLoader;
 import com.angeljedi.popularmovies.ui.widgets.TrailerViewHolder;
+import com.angeljedi.popularmovies.util.Utility;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -57,20 +60,28 @@ public class DetailsFragment extends Fragment implements LoaderManager.LoaderCal
         trailerRecyclerView = (RecyclerView) view.findViewById(R.id.list_trailers);
 
         if (movie != null) {
-            TextView tvTitle = (TextView) view.findViewById(R.id.details_title);
-            tvTitle.setText(movie.getTitle());
+            TextView titleTextView = (TextView) view.findViewById(R.id.details_title);
+            titleTextView.setText(movie.getTitle());
 
-            TextView tvReleaseDate = (TextView) view.findViewById(R.id.details_release_date);
-            tvReleaseDate.setText(movie.getReleaseDate());
+            TextView releaseDateTextView = (TextView) view.findViewById(R.id.details_release_date);
+            releaseDateTextView.setText(movie.getReleaseDate());
 
-            TextView tvRating = (TextView) view.findViewById(R.id.details_rating);
-            tvRating.setText(movie.getUserRating() + "/10");
+            TextView ratingTextView = (TextView) view.findViewById(R.id.details_rating);
+            ratingTextView.setText(movie.getUserRating() + "/10");
 
-            TextView tvSynopsis = (TextView) view.findViewById(R.id.details_synopsis);
-            tvSynopsis.setText(movie.getSynopsis());
+            TextView synopsisTextView = (TextView) view.findViewById(R.id.details_synopsis);
+            synopsisTextView.setText(movie.getSynopsis());
 
-            ImageView ivPoster = (ImageView) view.findViewById(R.id.details_poster);
-            Picasso.with(getActivity()).load(Movie.THUMBNAIL_SMALL + movie.getThumbnailPath()).into(ivPoster);
+            ImageView posterImageView = (ImageView) view.findViewById(R.id.details_poster);
+            Picasso.with(getActivity()).load(Movie.THUMBNAIL_SMALL + movie.getThumbnailPath()).into(posterImageView);
+
+            final Button favoriteButton = (Button) view.findViewById(R.id.details_favorite_button);
+            favoriteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onFavoriteButtonClicked();
+                }
+            });
         }
 
 //        space = getResources().getDimensionPixelSize(R.dimen.poster_spacing);
@@ -91,6 +102,12 @@ public class DetailsFragment extends Fragment implements LoaderManager.LoaderCal
         trailerRecyclerView.setAdapter(trailerAdapter);
 
         return view;
+    }
+
+    private void onFavoriteButtonClicked() {
+        Utility.saveNewFavorite(getActivity(), movie.getId());
+        String message = movie.getTitle() + " " + getActivity().getResources().getString(R.string.favorite_added);
+        Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
     }
 
     @Override

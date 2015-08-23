@@ -55,6 +55,19 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="25sp"/>
+
+                <Button
+                    android:id="@+id/details_favorite_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="32dp"
+                    android:text="@string/mark_favorite"
+                    android:textAllCaps="true"
+                    android:textSize="12sp"
+                    android:fontFamily="Roboto-Medium"
+                    android:background="@android:color/transparent"
+                    android:layout_margin="8dp"
+                    style="?android:attr/buttonBarButtonStyle"
+                    />
             </LinearLayout>
 
         </LinearLayout>

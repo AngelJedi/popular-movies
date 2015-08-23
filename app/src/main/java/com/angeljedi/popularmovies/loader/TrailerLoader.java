@@ -1,9 +1,7 @@
 package com.angeljedi.popularmovies.loader;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.net.Uri;
-import android.os.Build;
 import android.util.Log;
 
 import com.angeljedi.popularmovies.domain.Trailer;
@@ -21,7 +19,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class TrailerLoader extends AsyncLoader<List<Trailer>> {
 
     private static final String API_KEY = "16bf8a35a93817bb80ca46d39c0ed624";
@@ -31,7 +28,6 @@ public class TrailerLoader extends AsyncLoader<List<Trailer>> {
     private List<Trailer> trailerList;
     private String movieId;
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public TrailerLoader(Context context, String movieId) {
         super(context);
         trailerList = new ArrayList<>();

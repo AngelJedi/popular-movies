@@ -1,11 +1,10 @@
 package com.angeljedi.popularmovies.loader;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.net.Uri;
-import android.os.Build;
 import android.util.Log;
 
+import com.angeljedi.popularmovies.R;
 import com.angeljedi.popularmovies.domain.Movie;
 import com.angeljedi.popularmovies.util.Utility;
 
@@ -22,8 +21,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
-@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class MovieLoader extends AsyncLoader<List<Movie>> {
 
     private static final String API_KEY = "16bf8a35a93817bb80ca46d39c0ed624";
@@ -31,28 +30,47 @@ public class MovieLoader extends AsyncLoader<List<Movie>> {
     private final String LOG_TAG = MovieLoader.class.getSimpleName();
 
     private List<Movie> movieList;
+    private Set<String> favoriteIdList;
     private String sortOrder;
+    private Context context;
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public MovieLoader(Context context) {
         super(context);
+        this.context = context;
         movieList = new ArrayList<>();
         sortOrder = Utility.getPreferredSort(context);
+        favoriteIdList = Utility.getFavoriteSet(context);
     }
 
     @Override
     public List<Movie> loadInBackground() {
-        URL url = buildUrl();
+        if (sortOrder.equals(context.getString(R.string.pref_sort_favorites_value))) {
+            loadFavorites();
+        } else {
+            loadMovieList();
+        }
+        return movieList;
+    }
+
+    private void loadFavorites() {
+        for (String id : favoriteIdList) {
+            URL url = buildMovieUrl(id);
+            String movieString = makeApiCall(url);
+            getMovieFromJsonString(movieString);
+        }
+    }
+
+    private void loadMovieList() {
+        URL url = buildListUrl();
         if (url == null) {
-            return movieList;
+            return;
         }
         String movieJsonStr = makeApiCall(url);
         if (movieJsonStr.equals("")) {
-            return movieList;
+            return;
         }
 
         getMovieListFromJsonArray(movieJsonStr);
-        return movieList;
     }
 
     private String makeApiCall(URL url) {
@@ -100,7 +118,7 @@ public class MovieLoader extends AsyncLoader<List<Movie>> {
         return builder.toString();
     }
 
-    private URL buildUrl() {
+    private URL buildListUrl() {
         final String MOVIE_BASE_URL =
                 "http://api.themoviedb.org/3/discover/movie";
         final String SORT_PARAM = "sort_by";
@@ -109,6 +127,23 @@ public class MovieLoader extends AsyncLoader<List<Movie>> {
         try {
             Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
                     .appendQueryParameter(SORT_PARAM, sortOrder)
+                    .appendQueryParameter(API_KEY_PARAM, API_KEY)
+                    .build();
+
+            return new URL(builtUri.toString());
+        } catch (MalformedURLException e) {
+            return null;
+        }
+    }
+
+    private URL buildMovieUrl(String movieId) {
+        try {
+            final String MOVIE_BASE_URL =
+                "http://api.themoviedb.org/3/movie";
+            final String API_KEY_PARAM = "api_key";
+
+            Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
+                    .appendPath(movieId)
                     .appendQueryParameter(API_KEY_PARAM, API_KEY)
                     .build();
 
@@ -130,6 +165,15 @@ public class MovieLoader extends AsyncLoader<List<Movie>> {
                 JSONObject object = array.getJSONObject(i);
                 getMovieFromJsonObject(object);
             }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void getMovieFromJsonString(String movieJsonStr) {
+        try {
+            JSONObject jsonObject = new JSONObject(movieJsonStr);
+            getMovieFromJsonObject(jsonObject);
         } catch (JSONException e) {
             e.printStackTrace();
         }

@@ -10,7 +10,8 @@
 
     <!-- Preference strings -->
     <string name="pref_sort_label">Sort Order</string>
-    <string name="pref_sort_key" translatable="false">sort</string>
+    <string name="pref_sort_key" translatable="false">sort_key</string>
+    <string name="pref_favorites_key" translatable="false">favorites_key</string>
     <string name="pref_sort_popular_label" translatable="false">Most Popular</string>
     <string name="pref_sort_popular_value" translatable="false">popularity.desc</string>
     <string name="pref_sort_rating_label" translatable="false">Highest Rated</string>
@@ -19,4 +20,6 @@
     <string name="pref_sort_favorites_value" translatable="false">favorites</string>
 
     <string name="trailers">Trailers:</string>
+    <string name="mark_favorite">Mark as Favorite</string>
+    <string name="favorite_added">added to favorites.</string>
 </resources>
